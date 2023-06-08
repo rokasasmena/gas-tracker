@@ -1,7 +1,6 @@
 <template>
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
-    <link rel="icon" href="../assets/images/gas-icon.ico">
 
   <div class="container">
     <div class="row">
