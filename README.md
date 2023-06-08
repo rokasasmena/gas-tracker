@@ -1,5 +1,7 @@
 # Gas-tracker project
 
+## This is a test version of gas-tracker project. Data are not full, but ready to be joined with backend.
+
 ## Project setup
 ```
 npm install
