@@ -1,37 +1,50 @@
 <template>
   <div>
-    <h1>Gas Tracker</h1>
+    <div class="main-topic gas-image">
+      <div class="main-topic-text">Gas Tracker</div>
+    </div>
     <!-- Display gas metrics -->
     <div class="gas-metrics">
-      <div class="gas-metric">
-        <label>Low Gas Price:</label>
-        <span>{{ lowGasPrice }}</span>
-      </div>
-      <div class="gas-metric">
-        <label>Average Gas Price:</label>
-        <span>{{ averageGasPrice }}</span>
-      </div>
-      <div class="gas-metric">
-        <label>High Gas Price:</label>
-        <span>{{ highGasPrice }}</span>
-      </div>
-      <div class="gas-metric">
-        <label>Base Price:</label>
-        <span>{{ basePrice }}</span>
-      </div>
-      <div class="gas-metric">
-        <label>Priority Price:</label>
-        <span>{{ priorityPrice }}</span>
-      </div>
-      <div class="gas-metric">
-        <label>Total Cost in USD:</label>
-        <span>{{ totalCost }}</span>
+      <div v-for="metric in gasMetrics" :key="metric.label" class="gas-metric">
+        <div class="card">
+          <div class="card-body">
+            <h3 class="card-title">{{ metric.label }}</h3>
+            <div class="price-value">
+              <span :class="getPriceClass(metric.label)">
+                <span v-if="getPriceClass(metric.label) === 'low-price'">
+                  <i class="bi bi-arrow-up"></i>
+                </span>
+                <span v-if="getPriceClass(metric.label) === 'average-price'">
+                  <i class="bi bi-dash"></i>
+                </span>
+                <span v-if="getPriceClass(metric.label) === 'high-price'">
+                  <i class="bi bi-arrow-down"></i>
+                </span>
+                <span class="metric-label">{{ metric.lowGasPrice }} gwei</span>
+              </span>
+            </div>
+            <div class="metric-values">
+              <div class="metric-value">
+                <label>Base price:</label>
+                <span>{{ metric.basePrice }}</span>
+              </div>
+              <div class="metric-value">
+                <label>Priority price:</label>
+                <span>{{ metric.priorityPrice }}</span>
+              </div>
+              <div class="metric-value">
+                <label>Total Cost in USD:</label>
+                <span>{{ metric.totalCost }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
 
     <!-- Gas price chart -->
     <div class="gas-chart">
-      <h2>Gas Price Chart</h2>
+      <h2 class="gas-price-topic">Gas Price Chart</h2>
       <div id="gasPriceChart" ref="chartElement"></div>
     </div>
 
@@ -42,6 +55,8 @@
       <button @click="changeNetwork('polygon')" :class="{ active: currentNetwork === 'polygon' }">Polygon</button>
     </div>
   </div>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.6.1/font/bootstrap-icons.css">
 </template>
 
 <script>
@@ -52,12 +67,29 @@ export default {
   name: 'GasTracker',
   data() {
     return {
-      lowGasPrice: 0,
-      averageGasPrice: 0,
-      highGasPrice: 0,
-      basePrice: 0,
-      priorityPrice: 0,
-      totalCost: 0,
+      gasMetrics: [
+        {
+          label: 'Low Gas Price',
+          lowGasPrice: 0,
+          basePrice: 0,
+          priorityPrice: 0,
+          totalCost: 0,
+        },
+        {
+          label: 'Average Gas Price',
+          lowGasPrice: 0,
+          basePrice: 0,
+          priorityPrice: 0,
+          totalCost: 0,
+        },
+        {
+          label: 'High Gas Price',
+          lowGasPrice: 0,
+          basePrice: 0,
+          priorityPrice: 0,
+          totalCost: 0,
+        },
+      ],
       currentNetwork: 'ethereum',
       chartData: [],
       chartInstance: null,
@@ -71,12 +103,20 @@ export default {
     fetchGasMetrics() {
       ApiService.getGasMetrics(this.currentNetwork)
         .then((response) => {
-          this.lowGasPrice = response.lowGasPrice;
-          this.averageGasPrice = response.averageGasPrice;
-          this.highGasPrice = response.highGasPrice;
-          this.basePrice = response.basePrice;
-          this.priorityPrice = response.priorityPrice;
-          this.totalCost = response.totalCost;
+          this.gasMetrics[0].lowGasPrice = response.lowGasPrice;
+          this.gasMetrics[0].basePrice = response.basePrice;
+          this.gasMetrics[0].priorityPrice = response.priorityPrice;
+          this.gasMetrics[0].totalCost = response.totalCost;
+
+          this.gasMetrics[1].lowGasPrice = response.averageGasPrice;
+          this.gasMetrics[1].basePrice = response.basePrice;
+          this.gasMetrics[1].priorityPrice = response.priorityPrice;
+          this.gasMetrics[1].totalCost = response.totalCost;
+
+          this.gasMetrics[2].lowGasPrice = response.highGasPrice;
+          this.gasMetrics[2].basePrice = response.basePrice;
+          this.gasMetrics[2].priorityPrice = response.priorityPrice;
+          this.gasMetrics[2].totalCost = response.totalCost;
         })
         .catch((error) => {
           console.error('Failed to fetch gas metrics:', error);
@@ -114,11 +154,53 @@ export default {
         this.fetchGasPriceChartData();
       }
     },
+    getPriceClass(label) {
+      if (label === 'Low Gas Price') {
+        return 'low-price';
+      } else if (label === 'Average Gas Price') {
+        return 'average-price';
+      } else if (label === 'High Gas Price') {
+        return 'high-price';
+      }
+    },
   },
 };
 </script>
 
 <style scoped>
+.gas-image{
+  background-image: url("../assets/images/petrol_station.jpg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: center top 35px;
+  height: 40vh;
+}
+.main-topic, .gas-price-topic {
+  font-size: 50px;
+  font-weight: bold;
+  position: relative;
+  text-align: center;
+  font-family: 'Caveat', cursive;
+}
+.main-topic::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: -1; /* Push the image behind the text */
+  background-image: url("../assets/images/petrol_station.jpg");
+  background-repeat: no-repeat;
+  background-size: contain;
+  background-position: bottom;
+}
+.main-topic-text {
+  position: relative;
+  margin-bottom: 20px;
+  font-weight: 700;
+}
+
 .gas-metrics {
   display: flex;
   flex-wrap: wrap;
@@ -126,13 +208,23 @@ export default {
 }
 
 .gas-metric {
-  width: 200px;
+  width: 300px;
   margin-right: 20px;
-  margin-bottom: 10px;
+  margin-bottom: 30px;
+  text-align-last: center;
 }
 
-.gas-metric label {
-  font-weight: bold;
+.metric-values {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.metric-value {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin-bottom: 10px;
 }
 
 .gas-chart {
@@ -149,5 +241,20 @@ export default {
 
 .network-switchers button.active {
   font-weight: bold;
+}
+
+.metric-label {
+  font-size: 20px;
+}
+.low-price {
+  color: green;
+}
+
+.average-price {
+  color: blue;
+}
+
+.high-price {
+  color: red;
 }
 </style>
