@@ -1,6 +1,6 @@
 # Gas-tracker project
 
-## This is a test version of gas-tracker project. Data are not full, but ready to be joined with backend.
+## This is a test version of gas-tracker project. Data are not full, but ready to be connected with the backend.
 
 ## Project setup
 ```
